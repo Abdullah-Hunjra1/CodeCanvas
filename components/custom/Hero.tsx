@@ -1,19 +1,46 @@
 'use client'
 import { MessagesContext } from '@/context/MessagesContext'
+import { UserDetailContext } from '@/context/UserDetailContext'
 import Colors from '@/data/Colors'
 import Lookup from '@/data/Lookup'
 import { ArrowRight, Link } from 'lucide-react'
 import React, { useState } from 'react'
+import SignInDialog from './SignInDialog'
+import { useMutation } from 'convex/react'
+import { api } from '@/convex/_generated/api'
+import { useRouter } from 'next/navigation'
 
 const Hero = () => {
   const [userInput, setUserInput] = useState("");
   const { messages, setMessages } = React.useContext(MessagesContext);
+  const [openDialog, setOpenDialog] = useState(false);
+  const CreateWorkSpace = useMutation(api.workspace.CreateWorkSpace)
+  const router = useRouter()
 
-  const onGenerate = (input: string) => {
-    setMessages({
+  const context = React.useContext(UserDetailContext);
+
+  if (!context) {
+    throw new Error("Hero must be used within Provider");
+  }
+
+  const { userDetail } = context;
+
+  const onGenerate = async (input: string) => {
+    if (!userDetail?.name) {
+      setOpenDialog(true);
+      return;
+    }
+    const msg = {
       role: "user",
       content: input
+    }
+    setMessages(msg)
+    const workspaceId = await CreateWorkSpace({
+      user: userDetail._id,
+      messages: [msg]
     })
+    console.log(workspaceId)
+    router.push("/workspace/" + workspaceId)
   }
   return (
     <div className='flex flex-col items-center mt-36 xl:mt-42 gap-2'>
@@ -37,6 +64,7 @@ const Hero = () => {
           <h2 key={index} onClick={() => onGenerate(suggestion)} className=' p-1 px-2 border rounded-full text-sm text-gray-400 hover:text-white cursor-pointer'>{suggestion}</h2>
         ))}
       </div>
+      <SignInDialog openDialog={openDialog} closeDialog={() => setOpenDialog(false)} />
     </div>
   )
 }
