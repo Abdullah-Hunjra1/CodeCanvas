@@ -113,7 +113,9 @@ const ChatView = () => {
                             />
                         )}
 
-                        <ReactMarkDown className=" flex flex-col">{msg.content}</ReactMarkDown>
+                        <div className="flex flex-col">
+                            <ReactMarkDown>{msg.content}</ReactMarkDown>
+                        </div>
 
                     </div>
                 ))}
