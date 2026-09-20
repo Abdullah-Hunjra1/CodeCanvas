@@ -1,5 +1,5 @@
 'use client'
-import { MessagesContext } from '@/context/MessagesContext'
+import { Message, MessagesContext } from "@/context/MessagesContext";
 import { UserDetailContext } from '@/context/UserDetailContext'
 import Colors from '@/data/Colors'
 import Lookup from '@/data/Lookup'
@@ -12,7 +12,14 @@ import { useRouter } from 'next/navigation'
 
 const Hero = () => {
   const [userInput, setUserInput] = useState("");
-  const { messages, setMessages } = React.useContext(MessagesContext);
+  const messagesContext = React.useContext(MessagesContext);
+
+  if (!messagesContext) {
+    throw new Error("Hero must be used within Provider");
+  }
+
+  const { setMessages } = messagesContext;
+
   const [openDialog, setOpenDialog] = useState(false);
   const CreateWorkSpace = useMutation(api.workspace.CreateWorkSpace)
   const router = useRouter()
@@ -30,18 +37,22 @@ const Hero = () => {
       setOpenDialog(true);
       return;
     }
-    const msg = {
+
+    const msg: Message = {
       role: "user",
-      content: input
-    }
-    setMessages(msg)
+      content: input,
+    };
+
+    setMessages((prev) => [...prev, msg]);
+
     const workspaceId = await CreateWorkSpace({
       user: userDetail._id,
-      messages: [msg]
-    })
-    console.log(workspaceId)
-    router.push("/workspace/" + workspaceId)
-  }
+      messages: [msg],
+    });
+
+    console.log(workspaceId);
+    router.push("/workspace/" + workspaceId);
+  };
   return (
     <div className='flex flex-col items-center mt-36 xl:mt-42 gap-2'>
       <h2 className='font-bold text-4xl'>{Lookup.HERO_HEADING}</h2>
