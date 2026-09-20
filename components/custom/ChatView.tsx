@@ -1,16 +1,20 @@
 "use client";
 
 import Image from "next/image";
-import { useConvex } from "convex/react";
+import { useConvex, useMutation } from "convex/react";
 import { useParams } from "next/navigation";
 import React, { useContext, useEffect, useState } from "react";
 import { api } from "@/convex/_generated/api";
 import { MessagesContext } from "@/context/MessagesContext";
 import Colors from "@/data/Colors";
 import { UserDetailContext } from "@/context/UserDetailContext";
-import { ArrowRight, Link } from "lucide-react";
+import { ArrowRight, Link, Loader2Icon } from "lucide-react";
 import Lookup from "@/data/Lookup";
 import { Id } from "@/convex/_generated/dataModel";
+import Prompt from "@/data/Prompt";
+import axios from "axios";
+import { UpdateMessages } from '../../convex/workspace';
+import ReactMarkDown from 'react-markdown'
 
 const ChatView = () => {
     const { id } = useParams<{ id: string }>();
@@ -33,6 +37,9 @@ const ChatView = () => {
     const { messages, setMessages } = messagesContext;
 
     const [userInput, setUserInput] = useState<string>("");
+    const [loading, setLoading] = useState(false)
+    const UpdateMessages = useMutation(api.workspace.UpdateMessages)
+
 
 
     const GetWorkspaceData = async () => {
@@ -44,7 +51,11 @@ const ChatView = () => {
     };
 
     const onGenerate = (input: string) => {
-        console.log(input);
+        setMessages(prev => [...prev, {
+            role: 'user',
+            content: input
+        }])
+        setUserInput('')
     };
 
     useEffect(() => {
@@ -53,13 +64,43 @@ const ChatView = () => {
         }
     }, [id]);
 
+    const GetAiResponse = async () => {
+        setLoading(true)
+        const PROMPT = JSON.stringify(messages) + Prompt.CHAT_PROMPT
+        const result = await axios.post("/api/ai-chat", {
+            prompt: PROMPT
+        })
+
+        const aiResp = {
+            role: 'assistant' as const,
+            content: result.data.result
+        }
+        setMessages(prev => [...prev, aiResp])
+
+        await UpdateMessages({
+            messages: [...messages, aiResp],
+            workspaceId: id as Id<"workspace">
+        })
+        setLoading(false)
+    }
+
+    useEffect(() => {
+        if (messages?.length > 0) {
+            const role = messages[messages?.length - 1].role;
+            if (role == 'user') {
+                GetAiResponse()
+            }
+        }
+    }, [messages]);
+
+
     return (
         <div className="relative h-[85vh] flex flex-col">
-            <div className="flex-1 overflow-y-scroll">
+            <div className="flex-1 overflow-y-scroll scrollbar-hide">
                 {messages.map((msg, index) => (
                     <div
                         key={index}
-                        className="p-3 rounded-lg mb-2 flex gap-2 items-start"
+                        className="p-3 rounded-lg mb-2 flex gap-2 items-start leading-7"
                         style={{ backgroundColor: Colors.CHAT_BACKGROUND }}
                     >
                         {msg.role === "user" && userDetail?.picture && (
@@ -72,9 +113,14 @@ const ChatView = () => {
                             />
                         )}
 
-                        <h2>{msg.content}</h2>
+                        <ReactMarkDown className=" flex flex-col">{msg.content}</ReactMarkDown>
+
                     </div>
                 ))}
+                {loading && <div className="p-3 rounded-lg mb-2 flex gap-2 items-start" style={{ backgroundColor: Colors.CHAT_BACKGROUND }}>
+                    <Loader2Icon className=" animate-spin" />
+                    <h2>Generating Response...</h2>
+                </div>}
             </div>
 
             <div
