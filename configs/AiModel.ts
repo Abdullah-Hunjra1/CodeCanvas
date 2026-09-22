@@ -10,11 +10,55 @@ const generationConfig = {
   maxOutputTokens: 8192,
 };
 
+const codeGenerationConfig = {
+  temperature: 1,
+  topP: 0.95,
+  maxOutputTokens: 8192,
+  responseMimeType: "application/json",
+};
+
 export async function generateAIResponse(prompt: string) {
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
     contents: prompt,
     config: generationConfig,
+  });
+
+  return response.text;
+}
+
+export async function generateAICode(prompt: string) {
+  const response = await ai.models.generateContent({
+    model: "gemini-3-flash-preview",
+    contents: [
+      {
+        role: "user",
+        parts: [
+          {
+            text: "Generate to do app : Generate a Project in React.",
+          },
+        ],
+      },
+      {
+        role: "model",
+        parts: [
+          {
+            text: `{
+              "projectTitle": "Simple To-Do App"
+            }`,
+          },
+        ],
+      },
+      {
+        role: "user",
+        parts: [
+          {
+            text: prompt,
+          },
+        ],
+      },
+    ],
+    config: codeGenerationConfig,
   });
 
   return response.text;
