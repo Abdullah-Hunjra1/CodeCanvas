@@ -15,7 +15,13 @@ import Prompt from "@/data/Prompt";
 import axios from "axios";
 import ReactMarkDown from 'react-markdown'
 import { useSidebar } from "../ui/sidebar";
+import { UpdateToken } from '../../convex/users';
 
+
+
+export const countToken = (inputText) => {
+    return inputText.trim().split(/\s+/).filter(word => word).length;
+}
 
 const ChatView = () => {
     const { id } = useParams<{ id: string }>();
@@ -40,7 +46,8 @@ const ChatView = () => {
     const [userInput, setUserInput] = useState<string>("");
     const [loading, setLoading] = useState(false)
     const UpdateMessages = useMutation(api.workspace.UpdateMessages)
-    const {toggleSidebar}=useSidebar()
+    const { toggleSidebar } = useSidebar()
+    const UpdateTokens = useMutation(api.users.UpdateToken)
 
 
 
@@ -82,6 +89,12 @@ const ChatView = () => {
         await UpdateMessages({
             messages: [...messages, aiResp],
             workspaceId: id as Id<"workspace">
+        })
+        const token = Number(userDetail?.token) - Number(countToken(JSON.stringify(aiResp)))
+        //Update tokens in database
+        await UpdateTokens({
+            userId:userDetail?._id,
+            token:token
         })
         setLoading(false)
     }
