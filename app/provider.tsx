@@ -63,9 +63,15 @@ const Provider = ({ children }: ProviderProps) => {
                 disableTransitionOnChange
               >
                 <SidebarProvider defaultOpen={false}>
-                  <Header />
                   <AppSidebar />
-                  {children}
+
+                  <div className="flex min-w-0 flex-1 flex-col">
+                    <Header />
+
+                    <main className="min-w-0 flex-1">
+                      {children}
+                    </main>
+                  </div>
                 </SidebarProvider>
               </NextThemesProvider>
             </ActionContext.Provider>

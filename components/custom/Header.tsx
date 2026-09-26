@@ -8,7 +8,7 @@ import { UserDetailContext } from "@/context/UserDetailContext";
 import { ActionContext } from "@/context/ActionContext";
 import Link from "next/link";
 import { LucideDownload, Rocket } from "lucide-react";
-import { useSidebar } from "../ui/sidebar";
+// import { useSidebar } from "../ui/sidebar";
 import { usePathname } from "next/navigation";
 
 const Header = () => {
@@ -21,7 +21,7 @@ const Header = () => {
 
   const { setAction } = actionContext;
 
-  const { toggleSidebar } = useSidebar()
+  // const { toggleSidebar } = useSidebar()
   const path = usePathname()
   console.log(path?.includes('workspace'))
 
@@ -64,10 +64,10 @@ const Header = () => {
         path?.includes("workspace") && <div>
           <Button variant={'ghost'} onClick={() => onActionBtn('export')}><LucideDownload />Export</Button>
           <Button className='bg-blue-500 text-white hover:bg-blue-600' onClick={() => onActionBtn('deploy')}><Rocket />Deploy</Button>
-          {userDetail && <Image src={userDetail?.picture} alt="user" width={30} height={30}
+          {/* {userDetail && <Image src={userDetail?.picture} alt="user" width={30} height={30}
             className=" rounded-full w-[30px]"
             onClick={toggleSidebar}
-          />}
+          />} */}
         </div>
       )}
     </div>

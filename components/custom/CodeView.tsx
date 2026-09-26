@@ -182,16 +182,14 @@ const CodeView = () => {
           ],
         }}
       >
-        <SandpackLayout>
-          {activeTab === "code" ? (
-            <>
-              <SandpackFileExplorer style={{ height: "80vh" }} />
-              <SandpackCodeEditor style={{ height: "80vh" }} />
-            </>
-          ) : (
-            <SandpackPreviewClient />
-          )}
-        </SandpackLayout>
+        {activeTab === "code" ? (
+          <SandpackLayout>
+            <SandpackFileExplorer style={{ height: "80vh" }} />
+            <SandpackCodeEditor style={{ height: "80vh" }} />
+          </SandpackLayout>
+        ) : (
+          <SandpackPreviewClient />
+        )}
       </SandpackProvider>
 
       {loading && (
