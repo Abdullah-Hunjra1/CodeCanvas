@@ -11,7 +11,7 @@ const generationConfig = {
 };
 
 const codeGenerationConfig = {
-  temperature: 1,
+  temperature: 0.7,
   topP: 0.95,
   maxOutputTokens: 8192,
   responseMimeType: "application/json",
@@ -35,7 +35,7 @@ export async function generateAICode(prompt: string) {
         role: "user",
         parts: [
           {
-            text: "Generate to do app : Generate a Project in React.",
+            text: "Generate to do app: Generate a Project in React.",
           },
         ],
       },
@@ -43,9 +43,9 @@ export async function generateAICode(prompt: string) {
         role: "model",
         parts: [
           {
-            text: `{
-              "projectTitle": "Simple To-Do App"
-            }`,
+            text: JSON.stringify({
+              projectTitle: "Simple To-Do App",
+            }),
           },
         ],
       },
@@ -61,5 +61,11 @@ export async function generateAICode(prompt: string) {
     config: codeGenerationConfig,
   });
 
-  return response.text;
+  const result = response.text?.trim();
+
+  if (!result) {
+    throw new Error("Gemini returned an empty response");
+  }
+
+  return result;
 }

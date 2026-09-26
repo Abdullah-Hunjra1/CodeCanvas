@@ -14,11 +14,9 @@ export async function POST(req: Request) {
 
     const result = await generateAICode(prompt);
 
-    if (!result) {
-      throw new Error("Code generation returned no result");
-    }
+    const parsedResult = JSON.parse(result);
 
-    return NextResponse.json(JSON.parse(result));
+    return NextResponse.json(parsedResult);
   } catch (error) {
     console.error("Code generation error:", error);
 

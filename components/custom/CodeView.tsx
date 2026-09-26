@@ -6,7 +6,6 @@ import {
   SandpackProvider,
   SandpackLayout,
   SandpackCodeEditor,
-  SandpackPreview,
   SandpackFileExplorer,
 } from "@codesandbox/sandpack-react";
 import Lookup from "@/data/Lookup";
@@ -20,6 +19,8 @@ import { Loader2Icon } from "lucide-react";
 import type { Id } from "@/convex/_generated/dataModel";
 import { countToken } from "./ChatView";
 import { UserDetailContext } from "@/context/UserDetailContext";
+import SandpackPreviewClient from "./SandpackPreviewClient";
+import { ActionContext } from "@/context/ActionContext";
 
 const CodeView = () => {
   const { id } = useParams<{ id: string }>();
@@ -35,6 +36,13 @@ const CodeView = () => {
   const UpdateTokens = useMutation(api.users.UpdateToken)
 
   const { userDetail, setUserDetail } = useContext(UserDetailContext);
+  const actionContext = useContext(ActionContext);
+
+  if (!actionContext) {
+    throw new Error("CodeView must be used within Provider");
+  }
+
+  const { action } = actionContext;
 
 
   const GetFiles = async () => {
@@ -62,12 +70,14 @@ const CodeView = () => {
 
   useEffect(() => {
     if (!id) return;
-
-    // React 19 set-state-in-effect lint rule
-    // GetFiles itself handles the async state updates.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     GetFiles();
   }, [id]);
+
+  useEffect(() => {
+    if (!action) return;
+
+    setActiveTab("preview");
+  }, [action]);
 
   const GenerateAiCode = async () => {
     if (!id) return;
@@ -98,14 +108,16 @@ const CodeView = () => {
         files: aiResp?.files,
       });
 
+      const currentTokens = userDetail?.token ?? 0;
+
       const token =
-        Number(userDetail?.token) -
-        Number(countToken(JSON.stringify(aiResp)));
+        currentTokens -
+        countToken(JSON.stringify(aiResp));
 
       if (userDetail?._id) {
         await UpdateTokens({
           userId: userDetail._id,
-          token: token,
+          token,
         });
 
         setUserDetail((prev) =>
@@ -177,10 +189,7 @@ const CodeView = () => {
               <SandpackCodeEditor style={{ height: "80vh" }} />
             </>
           ) : (
-            <SandpackPreview
-              style={{ height: "80vh" }}
-              showNavigator={true}
-            />
+            <SandpackPreviewClient />
           )}
         </SandpackLayout>
       </SandpackProvider>
