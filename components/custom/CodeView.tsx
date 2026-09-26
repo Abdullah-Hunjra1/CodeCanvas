@@ -34,8 +34,8 @@ const CodeView = () => {
   const convex = useConvex();
   const UpdateTokens = useMutation(api.users.UpdateToken)
 
-  const { userDetail , setUserDetail } = useContext(UserDetailContext);
-  
+  const { userDetail, setUserDetail } = useContext(UserDetailContext);
+
 
   const GetFiles = async () => {
     if (!id) return;
@@ -98,12 +98,20 @@ const CodeView = () => {
         files: aiResp?.files,
       });
 
-      const token = Number(userDetail?.token) - Number(countToken(JSON.stringify(aiResp)))
-      //Update tokens in database
-      await UpdateTokens({
-        userId: userDetail?._id,
-        token: token
-      })
+      const token =
+        Number(userDetail?.token) -
+        Number(countToken(JSON.stringify(aiResp)));
+
+      if (userDetail?._id) {
+        await UpdateTokens({
+          userId: userDetail._id,
+          token: token,
+        });
+
+        setUserDetail((prev) =>
+          prev ? { ...prev, token } : prev
+        );
+      }
     } catch (error) {
       console.error("Error generating AI code:", error);
     } finally {

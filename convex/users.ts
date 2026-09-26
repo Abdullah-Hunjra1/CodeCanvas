@@ -50,6 +50,34 @@ export const UpdateToken = mutation({
             token: args.token
         })
         return result;
-
     }
 })
+
+export const AddTokens = mutation({
+    args: {
+        userId: v.id("users"),
+        tokens: v.number(),
+    },
+
+    handler: async (ctx, args) => {
+        const user = await ctx.db.get(args.userId);
+
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        const currentTokens = user.token ?? 0;
+
+        if (!Number.isFinite(args.tokens)) {
+            throw new Error("Invalid token amount");
+        }
+
+        const newTokenBalance = currentTokens + args.tokens;
+
+        await ctx.db.patch(args.userId, {
+            token: newTokenBalance,
+        });
+
+        return newTokenBalance;
+    },
+});

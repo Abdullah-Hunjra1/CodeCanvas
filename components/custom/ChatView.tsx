@@ -16,10 +16,11 @@ import axios from "axios";
 import ReactMarkDown from 'react-markdown'
 import { useSidebar } from "../ui/sidebar";
 import { UpdateToken } from '../../convex/users';
+import { toast } from "sonner";
 
 
 
-export const countToken = (inputText) => {
+export const countToken = (inputText: string) => {
     return inputText.trim().split(/\s+/).filter(word => word).length;
 }
 
@@ -33,7 +34,7 @@ const ChatView = () => {
         throw new Error("ChatView must be used within Provider");
     }
 
-    const { userDetail } = userContext;
+    const { userDetail, setUserDetail } = userContext;
 
     const messagesContext = useContext(MessagesContext);
 
@@ -60,6 +61,10 @@ const ChatView = () => {
     };
 
     const onGenerate = (input: string) => {
+        if ((userDetail?.token ?? 0) < 10) {
+            toast('You dont have enough token')
+            return;
+        }
         setMessages(prev => [...prev, {
             role: 'user',
             content: input
@@ -74,30 +79,48 @@ const ChatView = () => {
     }, [id]);
 
     const GetAiResponse = async () => {
-        setLoading(true)
-        const PROMPT = JSON.stringify(messages) + Prompt.CHAT_PROMPT
-        const result = await axios.post("/api/ai-chat", {
-            prompt: PROMPT
-        })
+        setLoading(true);
 
-        const aiResp = {
-            role: 'assistant' as const,
-            content: result.data.result
+        try {
+            const PROMPT =
+                JSON.stringify(messages) + Prompt.CHAT_PROMPT;
+
+            const result = await axios.post("/api/ai-chat", {
+                prompt: PROMPT,
+            });
+
+            const aiResp = {
+                role: "assistant" as const,
+                content: result.data.result,
+            };
+
+            setMessages((prev) => [...prev, aiResp]);
+
+            await UpdateMessages({
+                messages: [...messages, aiResp],
+                workspaceId: id as Id<"workspace">,
+            });
+
+            const token =
+                Number(userDetail?.token) -
+                Number(countToken(JSON.stringify(aiResp)));
+
+            if (userDetail?._id) {
+                await UpdateTokens({
+                    userId: userDetail._id,
+                    token: token,
+                });
+
+                setUserDetail((prev) =>
+                    prev ? { ...prev, token } : prev
+                );
+            }
+        } catch (error) {
+            console.error("Error generating AI response:", error);
+        } finally {
+            setLoading(false);
         }
-        setMessages(prev => [...prev, aiResp])
-
-        await UpdateMessages({
-            messages: [...messages, aiResp],
-            workspaceId: id as Id<"workspace">
-        })
-        const token = Number(userDetail?.token) - Number(countToken(JSON.stringify(aiResp)))
-        //Update tokens in database
-        await UpdateTokens({
-            userId:userDetail?._id,
-            token:token
-        })
-        setLoading(false)
-    }
+    };
 
     useEffect(() => {
         if (messages?.length > 0) {
