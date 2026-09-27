@@ -1,36 +1,123 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CodeCanvas
 
-## Getting Started
+> AI-powered platform for generating and previewing React applications from natural language.
 
-First, run the development server:
+CodeCanvas is a full-stack AI web application that allows users to describe an application in natural language and generate a working React project from that description.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+The generated project can be explored, edited, and previewed directly in the browser. Users can also export their generated project or deploy it through the integrated workflow.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🚀 Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- 🤖 **AI Code Generation**
+  - Generate React projects using natural language prompts
+  - Powered by Google Gemini
 
-## Learn More
+- 💬 **AI Chat**
+  - Interact with the AI while building a project
+  - Chat history is stored with the workspace
 
-To learn more about Next.js, take a look at the following resources:
+- 🧑‍💻 **Live Code Editor**
+  - Browse generated project files
+  - Edit and explore the generated code directly in the browser
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- 👀 **Live Preview**
+  - Instantly preview generated React applications
+  - Powered by CodeSandbox Sandpack
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- 📁 **Workspace Management**
+  - Each project has its own workspace
+  - Generated files and conversations are stored for later access
 
-## Deploy on Vercel
+- 🔐 **Google Authentication**
+  - Secure sign-in using Google OAuth
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- 💳 **Token-based System**
+  - Users receive tokens for AI generation
+  - Additional tokens can be purchased through Stripe
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- 💰 **Stripe Payments**
+  - Stripe Checkout integration
+  - Secure payment confirmation through Stripe webhooks
+
+- 📤 **Export**
+  - Export generated projects to CodeSandbox
+
+- 🚀 **Deploy**
+  - Generate a shareable deployed preview from the generated project
+
+- 🌙 **Dark UI**
+  - Modern developer-focused interface
+  - Built with Tailwind CSS and shadcn/ui
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- shadcn/ui
+- Lucide React
+
+### Backend & Database
+
+- Next.js API Routes
+- Convex
+- TypeScript
+
+### AI
+
+- Google Gemini
+- `@google/genai`
+
+### Code Generation & Preview
+
+- CodeSandbox Sandpack
+
+### Authentication
+
+- Google OAuth
+
+### Payments
+
+- Stripe Checkout
+- Stripe Webhooks
+
+### Developer Tools
+
+- Git
+- GitHub
+- Axios
+- Vercel
+
+---
+
+## 🏗️ How It Works
+
+```text
+User Prompt
+     │
+     ▼
+ AI Chat
+     │
+     ▼
+Google Gemini
+     │
+     ▼
+Generated Project Files
+     │
+     ▼
+Convex Workspace
+     │
+     ├── Code Editor
+     │
+     └── Live Preview
+             │
+             ├── Export
+             │
+             └── Deploy
