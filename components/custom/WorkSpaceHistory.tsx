@@ -6,9 +6,16 @@ import { useConvex } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useSidebar } from "../ui/sidebar";
 import Link from "next/link";
+import { Doc } from "@/convex/_generated/dataModel";
 
 const WorkSpaceHistory = () => {
-    const { userDetail } = useContext(UserDetailContext);
+    const userContext = useContext(UserDetailContext);
+
+    if (!userContext) {
+        throw new Error("WorkSpaceHistory must be used within Provider");
+    }
+
+    const { userDetail } = userContext;;
     const convex = useConvex();
 
     const [workspaceList, setWorkspaceList] = useState<Doc<"workspace">[]>([]);

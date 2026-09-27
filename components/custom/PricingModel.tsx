@@ -38,7 +38,13 @@ import { UserDetailContext } from "@/context/UserDetailContext";
 import { useContext } from "react";
 
 const PricingModel = () => {
-    const { userDetail } = useContext(UserDetailContext);
+    const userContext = useContext(UserDetailContext);
+
+    if (!userContext) {
+        throw new Error("PricingModel must be used within Provider");
+    }
+
+    const { userDetail } = userContext;
     const onPayment = async (
         pricing: (typeof Lookup.PRICING_OPTIONS)[number]
     ) => {

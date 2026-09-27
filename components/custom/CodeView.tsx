@@ -29,13 +29,23 @@ const CodeView = () => {
   const [files, setFiles] = useState(Lookup.DEFAULT_FILE);
   const [loading, setLoading] = useState(false);
 
-  const { messages } = useContext(MessagesContext);
-
   const UpdateFiles = useMutation(api.workspace.UpdateFiles);
   const convex = useConvex();
   const UpdateTokens = useMutation(api.users.UpdateToken)
+  const messagesContext = useContext(MessagesContext);
+  const userContext = useContext(UserDetailContext);
 
-  const { userDetail, setUserDetail } = useContext(UserDetailContext);
+  if (!messagesContext) {
+    throw new Error("CodeView must be used within MessagesProvider");
+  }
+
+  if (!userContext) {
+    throw new Error("CodeView must be used within UserDetailProvider");
+  }
+
+  const { messages } = messagesContext;
+  const { userDetail, setUserDetail } = userContext;
+
   const actionContext = useContext(ActionContext);
 
   if (!actionContext) {

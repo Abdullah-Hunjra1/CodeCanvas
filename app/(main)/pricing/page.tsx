@@ -7,7 +7,13 @@ import Lookup from '@/data/Lookup'
 import React, { useContext } from 'react'
 
 const Pricing = () => {
-    const { userDetail, setUserDetail } = useContext(UserDetailContext)
+    const userContext = useContext(UserDetailContext);
+
+    if (!userContext) {
+        throw new Error("Pricing must be used within Provider");
+    }
+
+    const { userDetail, setUserDetail } = userContext;
     return (
         <div className=' mt-10 flex flex-col items-center w-full p-10 md:px-32 lg:px-48'>
             <h2 className=' font-bold text-5xl'>Pricing</h2>

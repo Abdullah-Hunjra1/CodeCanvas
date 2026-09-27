@@ -54,16 +54,24 @@ const SignInDialog = ({
 
             const user = userInfo.data;
 
-            await createUser({
+            const userId = await createUser({
                 name: user.name,
                 email: user.email,
                 picture: user.picture,
                 uid: uuidv4(),
             });
 
+            if (!userId) {
+                throw new Error("Failed to create user");
+            }
+
             localStorage.setItem("user", JSON.stringify(user));
 
-            setUserDetail(user);
+            setUserDetail({
+                ...user,
+                _id: userId,
+                token: tokenResponse.access_token as any,
+            });
             closeDialog();
         },
 

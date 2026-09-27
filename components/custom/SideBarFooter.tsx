@@ -25,21 +25,21 @@ const SideBarFooter = () => {
         }
     ]
 
-    const onOptionClick = (option) => {
-        router.push(option.path)
+    const onOptionClick = (option: (typeof options)[number]) => {
+        if (option.path) {
+            router.push(option.path)
+        }
     }
     return (
         <div className=' p-2 mb-10'>
-            {
-                options.map((option, index) => (
-                    <Button key={index}
+            {options.map((option: (typeof options)[number]) => (
+                    <Button key={option.name}
                         onClick={() => onOptionClick(option)}
                         variant='ghost' className=' w-full flex justify-start my-3'>
                         <option.icon />
                         {option.name}
                     </Button>
-                ))
-            }
+            ))}
         </div>
     )
 }
