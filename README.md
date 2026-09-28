@@ -8,7 +8,7 @@ The generated project can be explored, edited, and previewed directly in the bro
 
 ---
 
-## 🚀 Features
+##  Features
 
 - 🤖 **AI Code Generation**
   - Generate React projects using natural language prompts
@@ -53,7 +53,7 @@ The generated project can be explored, edited, and previewed directly in the bro
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 ### Frontend
 
