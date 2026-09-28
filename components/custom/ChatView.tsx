@@ -165,7 +165,7 @@ const ChatView = () => {
 
             {/* Input Section */}
             <div className=" flex gap-2 items-end">
-                {userDetail && <Image className=" rounded-full cursor-pointer" onClick={toggleSidebar} src={userDetail?.picture} alt="user" width={30} height={30} />}
+                {userDetail?.picture && <Image className=" rounded-full cursor-pointer" onClick={toggleSidebar} src={userDetail.picture} alt="user" width={30} height={30} />}
                 <div
                     className="p-5 border rounded-xl max-w-xl w-full mt-3"
                     style={{ backgroundColor: Colors.BACKGROUND }}

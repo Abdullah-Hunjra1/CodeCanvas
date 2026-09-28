@@ -7,6 +7,13 @@ import {
 } from "@codesandbox/sandpack-react";
 import React, { useContext } from "react";
 
+interface CodeSandboxClient {
+  getCodeSandboxURL: () => Promise<{
+    sandboxId?: string;
+    editorUrl?: string;
+  }>;
+}
+
 const SandpackPreviewClient = () => {
   const actionContext = useContext(ActionContext);
 
@@ -21,22 +28,29 @@ const SandpackPreviewClient = () => {
   const GetSandpackClient = async () => {
     const client = previewRef.current?.getClient();
 
-    if (client) {
-      const result = await client.getCodeSandboxURL();
+    if (!client) return;
 
-      if (action?.actionType === "deploy") {
-        window.open(
-          `https://${result?.sandboxId}.csb.app/`,
-          "_blank",
-          "noopener,noreferrer"
-        );
-      } else if (action?.actionType === "export") {
-        window.open(
-          result?.editorUrl,
-          "_blank",
-          "noopener,noreferrer"
-        );
-      }
+    const codeSandboxClient = client as typeof client & CodeSandboxClient;
+
+    if (typeof codeSandboxClient.getCodeSandboxURL !== "function") {
+      console.error("getCodeSandboxURL is not available on Sandpack client");
+      return;
+    }
+
+    const result = await codeSandboxClient.getCodeSandboxURL();
+
+    if (action?.actionType === "deploy" && result.sandboxId) {
+      window.open(
+        `https://${result.sandboxId}.csb.app/`,
+        "_blank",
+        "noopener,noreferrer"
+      );
+    } else if (action?.actionType === "export" && result.editorUrl) {
+      window.open(
+        result.editorUrl,
+        "_blank",
+        "noopener,noreferrer"
+      );
     }
   };
 
